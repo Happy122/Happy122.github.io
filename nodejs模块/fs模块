@@ -1,0 +1,130 @@
+fs模块
+    fs 模块提供了用于与文件系统进行交互（以类似于标准 POSIX 函数的方式）的 API。
+
+    异步的形式总是把完成回调作为其最后一个参数。 传给完成回调的参数取决于具体方法，但第一个参数总是预留给异常。 如果操作被成功地完成，则第一个参数会为 null 或 undefined
+
+1、引入
+    const fs = require('fs');
+
+2、fs模块的方法:
+    2.1 删除文件
+        同步
+        fs.unlink('文件', (err) => {
+            if (err) throw err;
+            console.log('已成功地删除文件');
+        });
+
+        异步
+        try {
+            fs.unlinkSync('文件');
+            console.log('已成功地删除文件');
+        } catch (err) {
+            // 处理错误
+        }
+
+    2.2 重命名
+        fs.rename('旧文件', '新文件', (err) => {
+            if (err) throw err;
+            console.log('重命名完成');
+        });
+
+    2.3 读取文件状态
+        fs.stat('文件地址', (err, stats) => {
+            if (err) throw err;
+            console.log(`文件属性: ${JSON.stringify(stats)}`);
+        });
+
+
+    2.4 测试用户对 path 指定的文件或目录的权限
+        // 检查文件是否存在于当前目录中。
+        fs.access(file, fs.constants.F_OK, (err) => {
+            console.log(`${file} ${err ? '不存在' : '存在'}`);
+        });
+
+        // 检查文件是否可读。
+        fs.access(file, fs.constants.R_OK, (err) => {
+            console.log(`${file} ${err ? '不可读' : '可读'}`);
+        });
+
+        // 检查文件是否可写。
+        fs.access(file, fs.constants.W_OK, (err) => {
+            console.log(`${file} ${err ? '不可写' : '可写'}`);
+        });
+
+        // 检查文件是否存在于当前目录中、以及是否可写。
+        fs.access(file, fs.constants.F_OK | fs.constants.W_OK, (err) => {
+        if (err) {
+            console.error(
+            `${file} ${err.code === 'ENOENT' ? '不存在' : '只可读'}`);
+        } else {
+            console.log(`${file} 存在，且可写`);
+        }
+        });
+
+    2.5 追加数据到文件，如果文件尚不存在则创建文件。 
+        fs.appendFile(fd, '追加的数据', 'utf8', (err) => {
+            fs.close(fd, (err) => {
+                if (err) throw err;
+            });
+            if (err) throw err;
+        });
+
+    2.6 更改文件的权限
+        fs.chmod('my_file.txt', 0o775, (err) => {
+            if (err) throw err;
+            console.log('文件 “my_file.txt” 的权限已被更改');
+        });
+
+            文件模式：
+            fs.constants.S_IRUSR	0o400	所有者可读
+            fs.constants.S_IWUSR	0o200	所有者可写
+            fs.constants.S_IXUSR	0o100	所有者可执行或搜索
+            fs.constants.S_IRGRP	0o40	群组可读
+            fs.constants.S_IWGRP	0o20	群组可写
+            fs.constants.S_IXGRP	0o10	群组可执行或搜索
+            fs.constants.S_IROTH	0o4	其他人可读
+            fs.constants.S_IWOTH	0o2	其他人可写
+            fs.constants.S_IXOTH	0o1	其他人可执行或搜索
+
+    2.7 拷贝文件
+        // 默认情况下将创建或覆盖目标文件。
+        fs.copyFile('源文件.txt', '目标文件.txt', err => {
+            if (err) throw err;
+            console.log('源文件已拷贝到目标文');
+        });
+
+    2.8 读取流
+        // 从某个字符设备创建流。
+        const stream = fs.createReadStream('设备');
+        setTimeout(() => {
+            stream.close(); // 这可能不会关闭流。
+            // 手动标记流的结束，就像底层的资源自身已表明文件的结束一样，使得流可以关闭。
+            // 这不会取消待处理的读取操作，如果存在此类操作，则进程可能仍无法成功地退出，直到完成。
+            stream.push(null);
+            stream.read(0);
+        }, 100);
+
+    2.9 写入流
+        const stream = fs.createWriteStream(path[,option]);
+
+        options <string> | <Object>
+            flags <string>  默认值: 'w'。
+            encoding <string> 默认值: 'utf8'。
+            fd <integer> 默认值: null。
+            mode <integer> 默认值: 0o666。
+            autoClose <boolean> 默认值: true。
+            emitClose <boolean> 默认值: false。
+            start <integer>
+            fs <Object> | <null> 默认值: null。
+
+
+
+
+
+
+
+
+
+
+
+

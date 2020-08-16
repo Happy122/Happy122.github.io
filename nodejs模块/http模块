@@ -1,0 +1,122 @@
+http模块
+
+1、引入http
+    const http = require('http');
+
+
+2、创建http服务器
+    const server = http.createServer((req, res) => {
+        <!-- 服务器返回信息头 -->
+        res.writeHead(200, {
+            'content-type' : 'text/plain'
+        });
+        <!-- 响应结束，返回响应数据 -->
+        res.end('Hello, Nodejs!);
+    })
+    //设置服务器监听端口，并设置服务器开启成功后的回调函数
+    server.listen(3000, () => {
+        console.log(‘服务开启成功’);
+    })
+
+    2.1、server的事件
+        (1)request：当客户端请求时触发改事件，参数为req和res
+            server.on('request', (req, res) => {
+                //
+            })
+        (2)connection：当TCP链接建立时，触发该事件，并提供一个socket参数，是net.Socket的实例
+            server.on('connection', socket => {
+                //
+            })
+        (3)close： 当服务器关闭时，触发该事件
+            server.on('close', () => {
+                //
+            })
+
+        注：http.createServer()其实就是添加了一个request事件监听，利用以下代码可以达到同样的效果
+            const http = require('http');
+            const server = new http.server();
+            server.on('request', (req, res) => {
+                //...
+            }).listen(3000, () => {
+                //...
+            })
+
+    2.2、 http.IncomingMessage是HTTP请求的信息，并提供以下3个事件
+        (1)data： 当请求体数据到来时触发，并提供一个chunk参数，表示接受的数据
+            http.IncomingMessage.on('data', chunk => {
+                //...
+            })
+
+        (2)end：当请求体数据传输完毕时触发，表示伺候不再有数据
+        (3)close：请求结束触发
+
+        http.IncomingMessage的主要属性：
+            method：HTTP请求方法，如GET
+            headers：请求头
+            url：路径
+            httpVersion：版本
+
+    2.3、 http.ServerResponse 是返回给客户端的信息，常用方法如下：
+        http.ServerResponse(res => {
+            res.writeHead(statusCode,[headers])     //想氢气个客户端发送响应头
+            res.write(data, [encoding])     //想请求发送内容
+            res.end([data], [encoding])     //结束请求
+        })
+
+3、客户端向服务器发送http请求
+    向服务器发送请求的方式有：
+    http.request(option[,callback])     //option为json对象，主要字段有host、port、method、path、headers等
+    http.get(option[,callback])         //等效于http.request()的get方式
+
+    示例1：
+        const http = require('http');
+        let reqData = '';
+        const request =http.request({
+            host: '127.0.0.1',
+            port: 3000,
+            method: 'get',
+        }, res => {
+            res.on('data', chunk => {
+                reqData += chunk
+            });
+            req.end(() => {
+                console.log(reqData)
+            });
+        }).end();
+
+    示例2： 使用http.get()也可以达到同样的效果
+        const http = require('http');
+        let reqData = '';
+        const request = http.get({
+            host: '127.0.0.1',
+            port: 3000,
+        }, res => {
+            res.on('data', chunk => {
+                reqData += chunk
+            });
+            req.end(() => {
+                console.log(reqData)
+            });
+        }).end();
+`
+    3.1、http.ClientRequest()类主要的事件和方法：
+        (1) response：当接收到响应时触发
+            res.on('response', () => {
+                //...
+            })
+        (2) request.write(chunk[,encoding][,callback])      //发送请求数据
+        (3) res.end([data][,encoding][,callback])           //发送请求完毕，最好不省略
+
+
+
+
+
+
+
+
+
+
+
+
+
+
