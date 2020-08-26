@@ -1,0 +1,9 @@
+URL模块
+
+1、url.parse()
+    解析url
+2、url.format(urlObject)
+    url.parse的逆向操作
+
+3、url.resolve(from, to)
+    添加或者替换url
